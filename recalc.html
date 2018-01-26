@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Calculating With React</title>
+  </head>
+  <body>
+
+  <div id="content">
+   <h1>The ReaCalc:</h1>
+   <p>
+    Hang on to your hats everyone, it's the React Calculator!
+   </p>
+  </div>
+  <div id="container"></div>
+
+  <!-- External resources for Recalc Application -->
+  <link rel="stylesheet" href="recalc.css">
+  <script src="build/react.js"></script>
+  <script src="build/react-dom.js"></script>
+  <script src="build/browser.js"></script>
+
+  <!-- React code starts here -->
+  <script type="text/babel">
+
+	var CalcDisplay = React.createClass ({
+    render (){
+      return(
+          <div className="calcDisplay">
+          {this.props.displayNumber}
+          </div>
+      );
+    },
+  });
+	var CalcButton = React.createClass ({
+    handleClick(){
+      this.props.ifClicked(this.props.value);
+    },
+    render (){
+      return(
+          <div className="calcButton" onClick={this.handleClick}>
+          {this.props.value}
+          </div>
+      );
+    },
+  });
+
+  var Calculator = React.createClass({
+
+    getInitialState(){
+      return{
+        operand1: '0',
+        initial: true,
+      };
+    },
+    upDateOperand(value){
+      var newVal;
+      if(this.state.initial){
+        newVal = value;
+      }
+      else{
+        newVal= this.state.operand1 + value;
+      }
+      this.setState({operand1:newVal})
+      this.setState({initial:false});
+    },
+
+    prepCalcl(calcFn){
+      this.setState({operand2: this.state.operand1,
+                    operand1:'0',
+                    calcFn: calcFn,
+                    initial: true});
+
+    },
+    doDiv(){
+      this.setState({operand1:this.state.operand2 / this.state.operand1});
+    },
+    doMul(){
+      this.setState({operand1:this.state.operand2 * this.state.operand1});
+    },
+    doSub(){
+      this.setState({operand1: this.state.operand2 - this.state.operand1});
+    },
+    doAdd(){
+      this.setState({operand1: parseInt(this.state.operand2) + parseInt(this.state.operand1)});
+    },
+    doCalc(){
+      this.state.calcFn();
+      this.setState({initial:true});
+    },
+    doClear(){
+      this.setState({
+        operand1:0,
+        operand2:0,
+        calcFn: '',
+        initial:true
+      })
+    },
+    render(){
+      return(
+        <div className="calculator">
+            <CalcDisplay displayNumber={this.state.operand1}/>
+            <div>
+            <CalcButton value="1"ifClicked={this.upDateOperand}/>
+            <CalcButton value="2"ifClicked={this.upDateOperand}/>
+            <CalcButton value="3"ifClicked={this.upDateOperand}/>
+            <CalcButton value="/"ifClicked={this.prepCalcl.bind(this, this.doDiv)}/>
+            </div>
+            <div>
+            <CalcButton value="4"ifClicked={this.upDateOperand}/>
+            <CalcButton value="5"ifClicked={this.upDateOperand}/>
+            <CalcButton value="6"ifClicked={this.upDateOperand}/>
+            <CalcButton value="*"ifClicked={this.prepCalcl.bind(this, this.doMul)}/>
+            </div>
+            <div>
+            <CalcButton value="7"ifClicked={this.upDateOperand}/>
+            <CalcButton value="8"ifClicked={this.upDateOperand}/>
+            <CalcButton value="9"ifClicked={this.upDateOperand}/>
+            <CalcButton value="-"ifClicked={this.prepCalcl.bind(this, this.doSub)}/>
+            </div>
+            <div>
+            <CalcButton value="C"ifClicked={this.prepCalcl.bind(this, this.doClear)}/>
+            <CalcButton value="0"ifClicked={this.upDateOperand}/>
+            <CalcButton value="="ifClicked={this.doCalc}/>
+            <CalcButton value="+"ifClicked={this.prepCalcl.bind(this, this.doAdd)}/>
+            </div>
+        </div>
+
+      );
+    },
+  });
+
+ReactDOM.render(
+  <Calculator displayNumber/>,
+  document.getElementById("container")
+);
+	</script>
+
+  </body>
+</html>
